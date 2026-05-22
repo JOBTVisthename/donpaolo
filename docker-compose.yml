@@ -12,16 +12,20 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   # Backend API
   backend:
-    build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
+    build: 
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    restart: always
     environment:
       NODE_ENV: development
       PORT: 3000
-      SUPABASE_URL: http://postgres:5432
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/emmaus
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN}
     ports:
@@ -34,13 +38,16 @@ services:
 
   # Frontend
   frontend:
-    build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
+    build: 
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    restart: always
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:3000
     ports:
       - "3001:3000"
+    env_file:
+      - .env
     depends_on:
       - backend
     volumes:
