@@ -3,13 +3,14 @@ import pino from 'pino';
 import { whatsappService } from './whatsapp.service';
 import { getSupabase } from '../config/database';
 
+const logger = pino();
+
 const redisConnection = {
-  host: 'champion-chamois-113768.upstash.io',
+  host: process.env.REDIS_HOST || 'localhost',
   port: 6379,
-  password: process.env.redis-cli --tls -u redis://default:gQAAAAAAAbxoAAIgcDFlMTU1MjA0N2RmNjg0YzRlODdlNWU2ZDFjMTYxNTlkZg@champion-chamois-113768.upstash.io:6379   ,
-  tls: {}
+  password: process.env.REDIS_PASSWORD,
+  ...(process.env.REDIS_TLS === 'true' ? { tls: {} } : {})
 };
-const redisConnection = { host: 'localhost', port: 6379 };
 
 export enum MessagePriority {
   CRITICAL = 1,   // Alert di rischio, emergenze
