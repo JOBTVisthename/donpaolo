@@ -10,12 +10,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel",
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
+    "dev": "npx turbo run dev --parallel",
+    "build": "npx turbo run build",
+    "test": "npx turbo run test",
+    "lint": "npx turbo run lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md}\"",
-    "type-check": "turbo run type-check",
+    "type-check": "npx turbo run type-check",
     "db:migrate": "cd packages/supabase && npm run migrate",
     "db:reset": "cd packages/supabase && npm run reset"
   },

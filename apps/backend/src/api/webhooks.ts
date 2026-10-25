@@ -63,7 +63,7 @@ function verifySignature(req: Request, signature: string): boolean {
   const appSecret = process.env.WHATSAPP_APP_SECRET;
   if (!appSecret) return false;
 
-  const payload = req.rawBody || JSON.stringify(req.body);
+  const payload = JSON.stringify(req.body);
   const hash = crypto
     .createHmac('sha256', appSecret)
     .update(payload)

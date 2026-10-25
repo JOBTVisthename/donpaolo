@@ -11,7 +11,7 @@ router.get('/:id', verifyJWT, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const user = await userService.getUserById(id);
+    const user = await userService.getUserByPhoneNumber(id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

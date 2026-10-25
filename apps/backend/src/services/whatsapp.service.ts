@@ -2,6 +2,9 @@ import axios from 'axios';
 import pino from 'pino';
 import { userService } from './user.service';
 import { aiService } from './ai.service';
+import { queueService, MessagePriority } from './queue.service';
+import { notificationService } from './notification.service';
+import { getSupabase } from '../config/database';
 
 const logger = pino();
 
@@ -14,7 +17,7 @@ interface WhatsAppIncomingMessage {
 }
 
 export class WhatsAppService {
-  private apiUrl = 'https://graph.instagram.com/v18.0';
+  private apiUrl = 'https://graph.facebook.com/v18.0';
   private phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   private accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
 
@@ -45,13 +48,36 @@ export class WhatsAppService {
       // Generate response
       const response = await aiService.generateResponse(messageText, []);
 
-      // Send response
-      await this.sendMessage(phoneNumber, response);
+      // Invia la risposta tramite coda per gestire priorità e rate limit
+      await queueService.enqueueMessage({
+        type: 'text',
+        phoneNumber,
+        userId: user.id,
+        messageType: 'chat_response',
+        content: response,
+        logContent: hasRisk ? `[RISK DETECTED] ${response}` : undefined
+      }, hasRisk ? MessagePriority.CRITICAL : MessagePriority.HIGH);
 
       // Handle risk
       if (hasRisk) {
         logger.warn(`🚨 Risk detected for ${phoneNumber}`);
-        // TODO: Create alert
+        
+        // 1. Aggiorna il livello di rischio dell'utente nel DB
+        await userService.updateRiskLevel(user.id, 'high');
+
+        // 2. Crea record nella tabella alerts
+        const supabase = getSupabase();
+        await supabase.from('alerts').insert([{
+          user_id: user.id,
+          alert_type: 'RISK_DETECTION',
+          severity: 'high',
+          description: messageText,
+          handled: false
+        }]);
+
+        // 3. Invia Notifica agli Amministratori
+        const alertContent = `*Utente:* ${user.name || phoneNumber}\n*Tel:* ${phoneNumber}\n*Messaggio:* "${messageText}"\n\n_L'IA ha rilevato una possibile situazione di crisi. Intervenire se necessario._`;
+        await notificationService.sendAdminAlert(alertContent);
       }
     } catch (error) {
       logger.error('Error handling incoming message:', error);
@@ -76,10 +102,70 @@ export class WhatsAppService {
       );
 
       logger.info(`✅ Message sent to ${phoneNumber}`);
-      return response.data;
     } catch (error) {
       logger.error(`❌ Error sending message to ${phoneNumber}:`, error);
       throw error;
+    }
+  }
+
+  /**
+   * Invia un messaggio utilizzando un template pre-approvato di WhatsApp.
+   * Necessario per l'invio proattivo (non iniziato dall'utente).
+   */
+  async sendTemplateMessage(
+    phoneNumber: string,
+    templateName: string,
+    languageCode: string = 'it',
+    parameters: any[] = []
+  ): Promise<void> {
+    try {
+      await axios.post(
+        `${this.apiUrl}/${this.phoneNumberId}/messages`,
+        {
+          messaging_product: 'whatsapp',
+          to: phoneNumber,
+          type: 'template',
+          template: {
+            name: templateName,
+            language: { code: languageCode },
+            components: [
+              {
+                type: 'body',
+                parameters: parameters,
+              },
+            ],
+          },
+        },
+        {
+          headers: { Authorization: `Bearer ${this.accessToken}` },
+        }
+      );
+      logger.info(`✅ Template ${templateName} inviato a ${phoneNumber}`);
+    } catch (error: any) {
+      logger.error(`❌ Errore invio template a ${phoneNumber}:`, error.response?.data || error.message);
+    }
+  }
+
+  /**
+   * Invia un file audio tramite URL pubblico
+   */
+  async sendAudioMessage(phoneNumber: string, audioUrl: string): Promise<void> {
+    try {
+      await axios.post(
+        `${this.apiUrl}/${this.phoneNumberId}/messages`,
+        {
+          messaging_product: 'whatsapp',
+          to: phoneNumber,
+          type: 'audio',
+          audio: { link: audioUrl },
+        },
+        {
+          headers: { Authorization: `Bearer ${this.accessToken}` },
+        }
+      );
+      logger.info(`✅ Audio inviato a ${phoneNumber}`);
+    } catch (error: any) {
+      logger.error(`❌ Errore invio audio a ${phoneNumber}:`, error.response?.data || error.message);
     }
   }
 }

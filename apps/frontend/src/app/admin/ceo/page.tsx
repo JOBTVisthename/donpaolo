@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { 
-  FiUsers, FiMessageSquare, FiAlertTriangle, FiSearch, 
+  FiUsers, FiMessageSquare, FiAlertTriangle, FiSearch, FiDownload,
   FiFilter, FiX, FiUser, FiCalendar, FiMapPin 
 } from 'react-icons/fi'
 import { toast, Toaster } from 'react-hot-toast'
@@ -21,14 +21,40 @@ interface User {
   subscription_status: string
   birth_date?: string
   last_contact?: string
+  last_emotion?: string
 }
 
 interface Message {
   id: string
   user_message: string
   ai_response: string
+  emotion_detected?: string
   created_at: string
 }
+
+const sentimentMap: Record<string, number> = {
+  joy: 3,
+  gratitude: 2,
+  peace: 1,
+  neutral: 0,
+  uncertainty: -1,
+  sadness: -2,
+  anxiety: -2,
+  fear: -3,
+  anger: -3,
+};
+
+const emotionColorMap: Record<string, string> = {
+  joy: 'bg-yellow-100 text-yellow-700',
+  gratitude: 'bg-pink-100 text-pink-700',
+  peace: 'bg-green-100 text-green-700',
+  neutral: 'bg-gray-100 text-gray-700',
+  uncertainty: 'bg-purple-100 text-purple-700',
+  sadness: 'bg-blue-100 text-blue-700',
+  anxiety: 'bg-orange-100 text-orange-700',
+  fear: 'bg-red-100 text-red-700',
+  anger: 'bg-rose-100 text-rose-700',
+};
 
 export default function CEODashboard() {
   const [users, setUsers] = useState<User[]>([])
@@ -36,6 +62,8 @@ export default function CEODashboard() {
   const [chatHistory, setChatHistory] = useState<Message[]>([])
   const [search, setSearch] = useState('')
   const [filterRisk, setFilterRisk] = useState('all')
+  const [stats, setStats] = useState({ totalUsers: 0, activeToday: 0, pendingAlerts: 0 })
+  const [adminMessage, setAdminMessage] = useState('')
 
   // Mock data per il grafico
   const chartData = [
@@ -57,8 +85,8 @@ export default function CEODashboard() {
       // In produzione: const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/conversations?risk=${filterRisk}`)
       // Simulazione per anteprima:
       setUsers([
-        { id: '1', name: 'Mario Rossi', phone_number: '+39 333 1234567', province: 'Roma', parrocchia: 'San Pietro', risk_level: 'high', subscription_status: 'active', last_contact: '2024-05-23T10:00:00Z' },
-        { id: '2', name: 'Giulia Bianchi', phone_number: '+39 347 7654321', province: 'Milano', parrocchia: 'Duomo', risk_level: 'none', subscription_status: 'trial', last_contact: '2024-05-23T09:30:00Z' },
+        { id: '1', name: 'Mario Rossi', phone_number: '+39 333 1234567', province: 'Roma', parrocchia: 'San Pietro', risk_level: 'high', subscription_status: 'active', last_contact: '2024-05-23T10:00:00Z', last_emotion: 'sadness' },
+        { id: '2', name: 'Giulia Bianchi', phone_number: '+39 347 7654321', province: 'Milano', parrocchia: 'Duomo', risk_level: 'none', subscription_status: 'trial', last_contact: '2024-05-23T09:30:00Z', last_emotion: 'peace' },
       ])
     } catch (err) {
       toast.error('Errore caricamento utenti')
@@ -71,12 +99,37 @@ export default function CEODashboard() {
       // const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/conversations/${user.id}`)
       // setChatHistory(res.data)
       setChatHistory([
-        { id: '1', user_message: 'Don Paolo, mi sento molto solo oggi.', ai_response: 'Caro Mario, la solitudine può essere un deserto, ma ricorda che il Signore cammina sempre al tuo fianco...', created_at: '2024-05-23T08:00:00Z' }
+        { id: '3', user_message: 'Oggi mi sento meglio, grazie.', ai_response: 'Sia lodato Dio! Sono felice di sentirti in pace.', emotion_detected: 'peace', created_at: '2024-05-23T10:00:00Z' },
+        { id: '2', user_message: 'Grazie per le tue parole di ieri.', ai_response: 'Prego, il cammino della fede è condivisione.', emotion_detected: 'gratitude', created_at: '2024-05-23T09:00:00Z' },
+        { id: '1', user_message: 'Don Paolo, mi sento molto solo oggi.', ai_response: 'Caro Mario, la solitudine può essere un deserto...', emotion_detected: 'sadness', created_at: '2024-05-23T08:00:00Z' }
       ])
     } catch (err) {
       toast.error('Errore caricamento chat')
     }
   }
+
+  const exportCSV = () => {
+    const headers = ['Nome', 'Telefono', 'Provincia', 'Parrocchia', 'Rischio'];
+    const rows = users.map(u => [u.name, u.phone_number, u.province, u.parrocchia, u.risk_level].join(','));
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `donpaolo_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
+
+  const handleAdminSendMessage = async () => {
+    if (!adminMessage || !selectedUser) return;
+    try {
+      await axios.post('/api/admin/send-message', { userId: selectedUser.id, message: adminMessage });
+      toast.success('Messaggio inviato');
+      setAdminMessage('');
+    } catch (err) {
+      toast.error('Errore invio messaggio');
+    }
+  };
 
   return (
     <AdminLayout>
@@ -88,13 +141,19 @@ export default function CEODashboard() {
             <h1 className="text-3xl font-bold text-gray-900">Dashboard CEO</h1>
             <p className="text-gray-600">Monitoraggio attività spirituale e supporto comunità</p>
           </div>
+          <button 
+            onClick={exportCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-50 transition shadow-sm"
+          >
+            <FiDownload /> Esporta CSV
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <StatCard title="Utenti Totali" value="1.240" icon={<FiUsers />} color="blue" />
-          <StatCard title="Attivi Oggi" value="482" icon={<FiMessageSquare />} color="green" />
+          <StatCard title="Utenti Totali" value={stats.totalUsers.toString()} icon={<FiUsers />} color="blue" />
+          <StatCard title="Attivi Oggi" value={stats.activeToday.toString()} icon={<FiMessageSquare />} color="green" />
           <StatCard title="Rosari Guidati" value="89" icon={<FiUsers />} color="purple" />
-          <StatCard title="Alert Rischio" value="3" icon={<FiAlertTriangle />} color="red" />
+          <StatCard title="Alert Rischio" value={stats.pendingAlerts.toString()} icon={<FiAlertTriangle />} color="red" />
         </div>
 
         {/* Main Section */}
@@ -119,7 +178,7 @@ export default function CEODashboard() {
           <div className="card p-6 bg-red-50 border-red-100 flex flex-col justify-center">
             <FiAlertTriangle className="text-red-600 mb-2" size={32} />
             <h3 className="text-red-900 font-bold text-xl">Attenzione Rischio</h3>
-            <p className="text-red-700 text-sm mt-1">Ci sono 3 utenti che hanno espresso pensieri critici o isolamento grave nelle ultime 2 ore.</p>
+            <p className="text-red-700 text-sm mt-1">Ci sono {stats.pendingAlerts} utenti che richiedono attenzione immediata.</p>
             <button onClick={() => setFilterRisk('high')} className="mt-4 w-full py-2 bg-red-600 text-white rounded-lg font-bold text-sm">GESTISCI ORA</button>
           </div>
         </div>
@@ -163,7 +222,14 @@ export default function CEODashboard() {
               {users.map(user => (
                 <tr key={user.id} className="hover:bg-gray-50 cursor-pointer transition" onClick={() => openUserDrawer(user)}>
                   <td className="px-6 py-4">
-                    <div className="font-bold text-gray-900">{user.name}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-bold text-gray-900">{user.name}</div>
+                      {user.last_emotion && (
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium uppercase ${emotionColorMap[user.last_emotion] || 'bg-gray-100 text-gray-600'}`}>
+                          {user.last_emotion}
+                        </span>
+                      )}
+                    </div>
                     <div className="text-gray-500 text-xs">{user.phone_number}</div>
                   </td>
                   <td className="px-6 py-4">
@@ -217,6 +283,31 @@ export default function CEODashboard() {
               <div className="flex items-center gap-2"><FiCalendar className="text-gray-400" /> Nascita: 12/05/1975</div>
             </div>
 
+            {/* Sentiment Analysis Trend Area */}
+            <div className="px-4 py-3 border-b bg-white">
+              <p className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-wider">Trend Emotivo Storico</p>
+              <div className="h-[60px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={[...chatHistory].reverse()}>
+                    <YAxis hide domain={[-4, 4]} />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-gray-800 text-white text-[10px] px-2 py-1 rounded shadow-lg">
+                              {payload[0].payload.emotion_detected}
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Line type="monotone" dataKey={(m) => sentimentMap[m.emotion_detected || 'neutral']} stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3, fill: '#8b5cf6' }} activeDot={{ r: 5 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
             {/* Chat History Area (WhatsApp Style) */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#e5ddd5] relative">
               <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-repeat" />
@@ -252,10 +343,18 @@ export default function CEODashboard() {
               <div className="flex gap-2">
                 <input 
                   type="text" 
+                  value={adminMessage}
+                  onChange={(e) => setAdminMessage(e.target.value)}
                   placeholder="Invia messaggio diretto..." 
                   className="flex-1 px-4 py-2 border rounded-full text-sm focus:ring-2 focus:ring-spiritual-500"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAdminSendMessage()}
                 />
-                <button className="p-2 bg-spiritual-600 text-white rounded-full"><FiUsers size={18} /></button>
+                <button 
+                  onClick={handleAdminSendMessage}
+                  className="p-2 bg-spiritual-600 text-white rounded-full hover:bg-spiritual-700 transition"
+                >
+                  <FiMessageSquare size={18} />
+                </button>
               </div>
               <button className="w-full mt-3 py-2 border border-green-500 text-green-600 rounded-lg text-xs font-bold hover:bg-green-50">SEGNA COME GESTITO</button>
             </div>

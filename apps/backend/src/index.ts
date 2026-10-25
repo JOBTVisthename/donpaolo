@@ -1,7 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
 import pino from 'pino';
 
 import { initializeSupabase } from './config/database';
