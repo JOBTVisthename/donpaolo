@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { onboardingService } from './onboarding.service';
 import pino from 'pino';
 import { userService } from './user.service';
 import { aiService } from './ai.service';
@@ -31,12 +32,12 @@ export class WhatsAppService {
       // Get or create user
       let user = await userService.getUserByPhoneNumber(phoneNumber);
 
-      if (!user) {
-        // New user - start onboarding
-        logger.info(`🆕 New user: ${phoneNumber}`);
-        await this.sendMessage(
+      if (!user || !(user as any).onboarding_completed) {
+        await onboardingService.handle(
           phoneNumber,
-          'Benvenuto 🙏\nMi piacerebbe conoscerti meglio.\n\nCome preferisci essere chiamato?'
+          message.type === 'text' ? messageText : '',
+          user,
+          (t) => this.sendMessage(phoneNumber, t)
         );
         return;
       }
