@@ -3,12 +3,13 @@ import pino from 'pino';
 import { aiService } from '../services/ai.service';
 import { userService } from '../services/user.service';
 import { conversationService } from '../services/conversation.service';
+import { verifyAdmin } from '../middleware/auth';
 
 const router = Router();
 const logger = pino();
 
 // Send message to AI and get response
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', verifyAdmin, async (req: Request, res: Response) => {
   try {
     const { userId, content, type = 'text' } = req.body;
 
