@@ -8,7 +8,7 @@ export const site = {
   dpoEmail: 'dpo@pregare-insieme.it',
   priceMonthly: '2,90',
   trialDays: 7,
-  address: 'INDIRIZZO REALE',
+  address: 'Ripa di Porta Ticinese 39, 20143 Milano (MI)',
   vat: 'PIVA REALE',
   email: 'privacy@pregare-insieme.it',
   // Numero WhatsApp in formato internazionale senza + (es. 393331234567). Vuoto = pulsante disattivato.
