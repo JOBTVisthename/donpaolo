@@ -61,15 +61,13 @@ router.post('/whatsapp', async (req: Request, res: Response) => {
 
 function verifySignature(req: Request, signature: string): boolean {
   const appSecret = process.env.WHATSAPP_APP_SECRET;
-  if (!appSecret) return false;
+  const raw = (req as any).rawBody as Buffer | undefined;
+  if (!appSecret || !raw || !signature) return false;
 
-  const payload = JSON.stringify(req.body);
-  const hash = crypto
-    .createHmac('sha256', appSecret)
-    .update(payload)
-    .digest('hex');
-
-  return `sha256=${hash}` === signature;
+  const expected = 'sha256=' + crypto.createHmac('sha256', appSecret).update(raw).digest('hex');
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 export default router;
