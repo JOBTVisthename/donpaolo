@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
 
 import express from 'express';
 import cors from 'cors';
@@ -14,7 +14,7 @@ import prayerRoutes from './api/prayers';
 import adminRoutes from './api/admin';
 import { errorHandler } from './middleware/error-handler';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
