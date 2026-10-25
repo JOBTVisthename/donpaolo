@@ -3,8 +3,8 @@ export const site = {
   domain: 'pregare-insieme.it',
   url: 'https://pregare-insieme.it',
   owner: 'Integra Srl',
-  address: 'IL_TUO_INDIRIZZO',
-  vat: 'LA_TUA_PIVA',
+  address: 'VIA ... , CAP CITTA (PR)',
+  vat: 'IT01234567890',
   email: 'privacy@pregare-insieme.it',
   // Numero WhatsApp in formato internazionale senza + (es. 393331234567). Vuoto = pulsante disattivato.
   whatsappNumber: '',
