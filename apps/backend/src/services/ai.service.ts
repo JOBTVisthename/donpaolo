@@ -48,7 +48,7 @@ export class AIService {
       ] as any[];
 
       const response = await this.openai.chat.completions.create({
-        model: process.env.OPENAI_MODEL || 'gpt-4',
+        model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
         messages,
         temperature: 0.7,
         max_tokens: 2000,
@@ -62,7 +62,7 @@ export class AIService {
 
       return content;
     } catch (error) {
-      logger.error('Error generating response:', error);
+      logger.error({ err: error }, 'Error generating response:');
       throw error;
     }
   }
@@ -70,7 +70,7 @@ export class AIService {
   async detectEmotion(text: string): Promise<string> {
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+        model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
         messages: [
           {
             role: 'system',
@@ -85,7 +85,7 @@ export class AIService {
 
       return response.choices[0]?.message?.content?.trim() || 'neutral';
     } catch (error) {
-      logger.error('Error detecting emotion:', error);
+      logger.error({ err: error }, 'Error detecting emotion:');
       return 'neutral';
     }
   }
@@ -93,7 +93,7 @@ export class AIService {
   async detectRisk(text: string): Promise<boolean> {
     try {
       const response = await this.openai.chat.completions.create({
-        model: process.env.OPENAI_MODEL || 'gpt-4',
+        model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
         messages: [
           {
             role: 'system',
@@ -108,7 +108,7 @@ export class AIService {
       const result = response.choices[0]?.message?.content?.trim().toUpperCase();
       return result === 'TRUE';
     } catch (error) {
-      logger.error('Error in AI risk detection:', error);
+      logger.error({ err: error }, 'Error in AI risk detection:');
       return false;
     }
   }

@@ -60,7 +60,7 @@ router.post('/', async (req: Request, res: Response) => {
       hasRisk,
     });
   } catch (error) {
-    logger.error('Error processing message:', error);
+    logger.error({ err: error }, 'Error processing message:');
     res.status(500).json({ error: 'Internal server error' });
   }
 });

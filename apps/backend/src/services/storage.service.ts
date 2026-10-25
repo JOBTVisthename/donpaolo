@@ -21,7 +21,7 @@ export class StorageService {
 
       return data.publicUrl;
     } catch (error) {
-      logger.error('Error uploading audio to Supabase Storage:', error);
+      logger.error({ err: error }, 'Error uploading audio to Supabase Storage:');
       throw error;
     }
   }

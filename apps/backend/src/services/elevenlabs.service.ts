@@ -32,7 +32,7 @@ export class ElevenLabsService {
 
       return Buffer.from(response.data);
     } catch (error) {
-      logger.error('Error generating speech with ElevenLabs:', error);
+      logger.error({ err: error }, 'Error generating speech with ElevenLabs:');
       throw error;
     }
   }

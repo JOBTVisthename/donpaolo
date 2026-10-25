@@ -32,7 +32,7 @@ export class PrayerService {
       logger.info(`✅ Prayer created for user ${userId}`);
       return data as Prayer;
     } catch (error) {
-      logger.error('Error creating prayer:', error);
+      logger.error({ err: error }, 'Error creating prayer:');
       throw error;
     }
   }
@@ -58,7 +58,7 @@ export class PrayerService {
       logger.info(`✅ Prayer completed: ${prayerId}`);
       return data as Prayer;
     } catch (error) {
-      logger.error('Error completing prayer:', error);
+      logger.error({ err: error }, 'Error completing prayer:');
       throw error;
     }
   }

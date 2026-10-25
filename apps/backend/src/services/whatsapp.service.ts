@@ -80,7 +80,7 @@ export class WhatsAppService {
         await notificationService.sendAdminAlert(alertContent);
       }
     } catch (error) {
-      logger.error('Error handling incoming message:', error);
+      logger.error({ err: error }, 'Error handling incoming message:');
     }
   }
 
@@ -103,7 +103,7 @@ export class WhatsAppService {
 
       logger.info(`✅ Message sent to ${phoneNumber}`);
     } catch (error) {
-      logger.error(`❌ Error sending message to ${phoneNumber}:`, error);
+      logger.error({ err: error }, `❌ Error sending message to ${phoneNumber}:`);
       throw error;
     }
   }

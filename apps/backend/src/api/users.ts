@@ -18,7 +18,7 @@ router.get('/:id', verifyJWT, async (req: Request, res: Response) => {
 
     res.json(user);
   } catch (error) {
-    logger.error('Error fetching user:', error);
+    logger.error({ err: error }, 'Error fetching user:');
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -32,7 +32,7 @@ router.put('/:id', verifyJWT, async (req: Request, res: Response) => {
     const updatedUser = await userService.updateUserProfile(id, updates);
     res.json(updatedUser);
   } catch (error) {
-    logger.error('Error updating user:', error);
+    logger.error({ err: error }, 'Error updating user:');
     res.status(500).json({ error: 'Internal server error' });
   }
 });

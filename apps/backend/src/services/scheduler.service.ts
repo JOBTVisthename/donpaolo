@@ -37,13 +37,13 @@ export class SchedulerService {
     // 3. Angelus - Ogni giorno alle 12:00
     cron.schedule('0 12 * * *', async () => {
       logger.info('🔔 Esecuzione job Angelus');
-      await this.handleAngelus().catch(err => logger.error('❌ Errore job Angelus:', err));
+      await this.handleAngelus().catch(err => logger.error({ err: err }, '❌ Errore job Angelus:'));
     });
 
     // 4. Compieta/Preghiera della Sera - Ogni giorno alle 20:30
     cron.schedule('30 20 * * *', async () => {
       logger.info('🌙 Esecuzione job Preghiera della Sera');
-      await this.handleEveningPrayer().catch(err => logger.error('❌ Errore job Preghiera Sera:', err));
+      await this.handleEveningPrayer().catch(err => logger.error({ err: err }, '❌ Errore job Preghiera Sera:'));
     });
   }
 

@@ -26,7 +26,7 @@ export class UserService {
 
       return data as User;
     } catch (error) {
-      logger.error('Error fetching user:', error);
+      logger.error({ err: error }, 'Error fetching user');
       throw error;
     }
   }
@@ -63,7 +63,7 @@ export class UserService {
       logger.info(`✅ User created: ${phoneNumber}`);
       return data as User;
     } catch (error) {
-      logger.error('Error creating user:', error);
+      logger.error({ err: error }, 'Error creating user');
       throw error;
     }
   }
@@ -88,7 +88,7 @@ export class UserService {
       logger.info(`✅ User updated: ${userId}`);
       return data as User;
     } catch (error) {
-      logger.error('Error updating user:', error);
+      logger.error({ err: error }, 'Error updating user');
       throw error;
     }
   }
@@ -101,7 +101,7 @@ export class UserService {
       await this.updateUserProfile(userId, { risk_level: riskLevel });
       logger.info(`Risk level updated for user ${userId}: ${riskLevel}`);
     } catch (error) {
-      logger.error('Error updating risk level:', error);
+      logger.error({ err: error }, 'Error updating risk level');
       throw error;
     }
   }
@@ -126,7 +126,7 @@ export class UserService {
         return user.birth_date && user.birth_date.slice(5, 10) === todayStr;
       }) as User[];
     } catch (error) {
-      logger.error('Error fetching users with birthday:', error);
+      logger.error({ err: error }, 'Error fetching users with birthday');
       return [];
     }
   }
@@ -146,7 +146,7 @@ export class UserService {
       if (error) throw error;
       return data as User[];
     } catch (error) {
-      logger.error('Error fetching active subscribers:', error);
+      logger.error({ err: error }, 'Error fetching active subscribers');
       return [];
     }
   }
@@ -172,7 +172,7 @@ export class UserService {
       if (error) throw error;
       return data as User[];
     } catch (error) {
-      logger.error('Error fetching dashboard users:', error);
+      logger.error({ err: error }, 'Error fetching dashboard users');
       return [];
     }
   }

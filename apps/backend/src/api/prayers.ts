@@ -23,7 +23,7 @@ router.post('/rosario/start', verifyJWT, async (req: Request, res: Response) => 
       guidance: 'Let\'s pray together. Take a moment to center yourself...',
     });
   } catch (error) {
-    logger.error('Error starting rosary:', error);
+    logger.error({ err: error }, 'Error starting rosary:');
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -42,7 +42,7 @@ router.put('/:id/complete', verifyJWT, async (req: Request, res: Response) => {
       message: 'Thank you for praying. May God\'s peace be with you. 🙏',
     });
   } catch (error) {
-    logger.error('Error completing prayer:', error);
+    logger.error({ err: error }, 'Error completing prayer:');
     res.status(500).json({ error: 'Internal server error' });
   }
 });

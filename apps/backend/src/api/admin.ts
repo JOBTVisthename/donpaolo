@@ -16,7 +16,7 @@ router.get('/dashboard', verifyAdmin, async (req: Request, res: Response) => {
       averageEmotion: 'neutral',
     });
   } catch (error) {
-    logger.error('Error fetching dashboard data:', error);
+    logger.error({ err: error }, 'Error fetching dashboard data:');
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -29,7 +29,7 @@ router.get('/alerts', verifyAdmin, async (req: Request, res: Response) => {
       alerts: [],
     });
   } catch (error) {
-    logger.error('Error fetching alerts:', error);
+    logger.error({ err: error }, 'Error fetching alerts:');
     res.status(500).json({ error: 'Internal server error' });
   }
 });

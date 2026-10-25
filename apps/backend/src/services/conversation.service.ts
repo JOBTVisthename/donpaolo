@@ -26,7 +26,7 @@ export class ConversationService {
 
       return data as Conversation;
     } catch (error) {
-      logger.error('Error saving conversation:', error);
+      logger.error({ err: error }, 'Error saving conversation:');
       throw error;
     }
   }
@@ -50,7 +50,7 @@ export class ConversationService {
         { role: 'assistant', content: conv.ai_response },
       ]);
     } catch (error) {
-      logger.error('Error fetching conversation history:', error);
+      logger.error({ err: error }, 'Error fetching conversation history:');
       return [];
     }
   }
