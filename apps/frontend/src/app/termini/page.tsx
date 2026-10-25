@@ -29,7 +29,7 @@ export default function Termini() {
       <p>Se i messaggi indicano un possibile rischio per te, il nostro team può essere avvisato per valutare un intervento, come spiegato nell&apos;<a className="text-amber-800 underline" href="/privacy">informativa privacy</a>.</p>
 
       <h2>Costi</h2>
-      <p>Eventuali condizioni economiche ti verranno comunicate in modo chiaro prima di qualsiasi addebito.</p>
+      <p>Il servizio include <strong>{site.trialDays} giorni di prova gratuita</strong>. Al termine della prova, se non disdici, il servizio prosegue al prezzo di <strong>{site.priceMonthly} € al mese, IVA inclusa</strong>, con rinnovo mensile automatico. Ti avvisiamo prima della fine della prova. Puoi disdire in qualsiasi momento, senza penali, scrivendo in chat o a {site.email}: la disdetta ha effetto dalla fine del periodo già pagato. Disdicendo durante la prova non viene addebitato nulla. Per i consumatori valgono i diritti previsti dal Codice del Consumo, compreso il diritto di recesso.</p>
 
       <h2>Responsabilità</h2>
       <p>Il servizio è fornito &quot;così com&apos;è&quot;. Nei limiti consentiti dalla legge non rispondiamo di danni derivanti dall&apos;affidamento alle risposte dell&apos;assistente.</p>

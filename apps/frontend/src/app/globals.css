@@ -13,3 +13,5 @@ body {
 .card {
   @apply bg-white rounded-lg shadow-sm border border-gray-200;
 }
+
+.font-serif { font-family: var(--font-lora), Georgia, 'Times New Roman', serif; }

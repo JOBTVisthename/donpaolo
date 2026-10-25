@@ -9,7 +9,7 @@ export default function Privacy() {
       <p>Ai sensi degli artt. 13 e 14 del Regolamento UE 2016/679 (GDPR), ti spieghiamo come trattiamo i tuoi dati quando usi {site.name} tramite WhatsApp.</p>
 
       <h2>Titolare del trattamento</h2>
-      <p>{site.owner}, {site.address}, P.IVA {site.vat}. Contatto privacy: {site.email}.</p>
+      <p>{site.owner}, {site.address}, P.IVA {site.vat}. Contatto privacy: {site.email}. Responsabile della protezione dei dati (DPO){site.dpoName ? `: ${site.dpoName}` : ''}: {site.dpoEmail}.</p>
 
       <h2>Quali dati trattiamo</h2>
       <ul>

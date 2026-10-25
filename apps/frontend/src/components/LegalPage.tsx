@@ -10,6 +10,7 @@ export default function LegalPage({ title, children }: { title: string; children
           <nav className="flex gap-4 text-sm text-stone-600">
             <Link href="/privacy">Privacy</Link>
             <Link href="/termini">Termini</Link>
+            <Link href="/cookie">Cookie</Link>
             <Link href="/eliminazione-dati">Elimina dati</Link>
           </nav>
         </div>
