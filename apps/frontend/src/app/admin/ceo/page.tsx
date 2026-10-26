@@ -8,7 +8,7 @@ import {
   FiFilter, FiX, FiUser, FiCalendar, FiMapPin 
 } from 'react-icons/fi'
 import { toast, Toaster } from 'react-hot-toast'
-import axios from 'axios'
+import { api } from '@/lib/api'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface User {
@@ -82,12 +82,18 @@ export default function CEODashboard() {
 
   const fetchUsers = async () => {
     try {
-      // In produzione: const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/conversations?risk=${filterRisk}`)
-      // Simulazione per anteprima:
-      setUsers([
-        { id: '1', name: 'Mario Rossi', phone_number: '+39 333 1234567', province: 'Roma', parrocchia: 'San Pietro', risk_level: 'high', subscription_status: 'active', last_contact: '2024-05-23T10:00:00Z', last_emotion: 'sadness' },
-        { id: '2', name: 'Giulia Bianchi', phone_number: '+39 347 7654321', province: 'Milano', parrocchia: 'Duomo', risk_level: 'none', subscription_status: 'trial', last_contact: '2024-05-23T09:30:00Z', last_emotion: 'peace' },
+      const c = await api()
+      const [u, d] = await Promise.all([
+        c.get('/admin/users', { params: { risk: filterRisk === 'all' ? undefined : filterRisk } }),
+        c.get('/admin/dashboard'),
       ])
+      setUsers((u.data.users || []).map((x: any) => ({
+        ...x,
+        name: [x.name, x.cognome].filter(Boolean).join(' ') || x.phone_number,
+        last_contact: x.updated_at,
+        last_emotion: x.last_emotion || null,
+      })))
+      setStats({ totalUsers: d.data.totalUsers || 0, activeToday: d.data.activeToday || 0, pendingAlerts: d.data.pendingAlerts || 0 })
     } catch (err) {
       toast.error('Errore caricamento utenti')
     }
@@ -96,13 +102,9 @@ export default function CEODashboard() {
   const openUserDrawer = async (user: User) => {
     setSelectedUser(user)
     try {
-      // const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/conversations/${user.id}`)
-      // setChatHistory(res.data)
-      setChatHistory([
-        { id: '3', user_message: 'Oggi mi sento meglio, grazie.', ai_response: 'Sia lodato Dio! Sono felice di sentirti in pace.', emotion_detected: 'peace', created_at: '2024-05-23T10:00:00Z' },
-        { id: '2', user_message: 'Grazie per le tue parole di ieri.', ai_response: 'Prego, il cammino della fede è condivisione.', emotion_detected: 'gratitude', created_at: '2024-05-23T09:00:00Z' },
-        { id: '1', user_message: 'Don Paolo, mi sento molto solo oggi.', ai_response: 'Caro Mario, la solitudine può essere un deserto...', emotion_detected: 'sadness', created_at: '2024-05-23T08:00:00Z' }
-      ])
+      const c = await api()
+      const res = await c.get(`/admin/users/${user.id}/conversations`)
+      setChatHistory([...(res.data.conversations || [])].reverse())
     } catch (err) {
       toast.error('Errore caricamento chat')
     }
@@ -123,7 +125,7 @@ export default function CEODashboard() {
   const handleAdminSendMessage = async () => {
     if (!adminMessage || !selectedUser) return;
     try {
-      await axios.post('/api/admin/send-message', { userId: selectedUser.id, message: adminMessage });
+      const c = await api(); await c.post('/admin/send-message', { userId: selectedUser.id, message: adminMessage });
       toast.success('Messaggio inviato');
       setAdminMessage('');
     } catch (err) {

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { FiSend, FiMic, FiStopCircle } from 'react-icons/fi'
-import axios from 'axios'
+import { api } from '@/lib/api'
 
 interface Message {
   id: string
@@ -52,22 +52,13 @@ export default function ChatTest() {
 
     try {
       // Simulate API call to backend
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/messages`,
-        {
-          userId: 'test-user',
-          content: input,
-          type: 'text',
-        }
-      ).catch(() => {
-        // Fallback response if API is not available
-        return {
-          data: {
-            response: 'Grazie per aver condiviso questo con me. Capisco che sia un momento importante per te. Ricorda che non sei solo. Dio cammina con te in ogni situazione.\n\nVuoi pregare insieme?',
-            emotion: 'sereno',
-            hasRisk: false,
-          },
-        }
+      const testPhone = process.env.NEXT_PUBLIC_TEST_PHONE || ''
+      if (!testPhone) throw new Error('Imposta NEXT_PUBLIC_TEST_PHONE in .env.local con il numero di un utente di test')
+      const c = await api()
+      const response = await c.post('/messages', {
+        userId: testPhone,
+        content: input,
+        type: 'text',
       })
 
       const aiMessage: Message = {

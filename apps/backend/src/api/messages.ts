@@ -43,11 +43,6 @@ router.post('/', verifyAdmin, async (req: Request, res: Response) => {
       has_risk_indicator: hasRisk,
     });
 
-    // Update user emotional state
-    await userService.updateUserProfile(user.id, {
-      emotional_state: emotion,
-    });
-
     // If risk detected, create alert
     if (hasRisk) {
       logger.warn(`🚨 Risk detected for user ${user.id}`);

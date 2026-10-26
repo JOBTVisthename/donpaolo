@@ -3,6 +3,8 @@ import pino from 'pino';
 import { verifyAdmin } from '../middleware/auth';
 import { getSupabase } from '../config/database';
 import { userService } from '../services/user.service';
+import { whatsappService } from '../services/whatsapp.service';
+import { conversationService } from '../services/conversation.service';
 
 const router = Router();
 const logger = pino();
@@ -58,6 +60,18 @@ router.post('/alerts/:id/handle', verifyAdmin, async (req: Request, res: Respons
     if (error) throw error;
     res.json({ ok: true });
   } catch (e) { fail(res, e, 'alert handle'); }
+});
+
+router.post('/send-message', verifyAdmin, async (req: Request, res: Response) => {
+  try {
+    const { userId, message } = req.body || {};
+    if (!userId || !message || String(message).length > 2000) return res.status(400).json({ error: 'userId e message richiesti' });
+    const { data: user, error } = await getSupabase().from('users').select('id,phone_number').eq('id', userId).single();
+    if (error || !user) return res.status(404).json({ error: 'Utente non trovato' });
+    await whatsappService.sendMessage(user.phone_number, String(message));
+    await conversationService.saveConversation({ user_id: user.id, user_message: '[messaggio dal team]', ai_response: String(message) } as any);
+    res.json({ ok: true });
+  } catch (e) { fail(res, e, 'send-message'); }
 });
 
 export default router;
