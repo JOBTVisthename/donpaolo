@@ -1,5 +1,5 @@
 import LegalPage from '@/components/LegalPage';
-import { site } from '@/lib/site';
+import { site, processor } from '@/lib/site';
 
 export const metadata = { title: `Informativa sulla privacy – ${site.name}` };
 
@@ -33,7 +33,7 @@ export default function Privacy() {
       <p>Le conversazioni sono salvate nei nostri sistemi. Il personale autorizzato del titolare può leggerle per fornire assistenza, migliorare il servizio e tutelare la sicurezza delle persone; l'accesso è riservato e protetto da credenziali personali.</p>
 
       <h2>Destinatari e fornitori</h2>
-      <p>Usiamo fornitori che trattano i dati per nostro conto: Meta Platforms (WhatsApp Business), Supabase (database), OpenAI (generazione delle risposte), ElevenLabs (messaggi vocali, se attivi), Upstash (code di messaggi) e il provider di hosting. Alcuni hanno sede fuori dallo Spazio Economico Europeo (es. USA): i trasferimenti avvengono con garanzie adeguate, come le Clausole contrattuali standard o decisioni di adeguatezza.</p>
+      <p>La gestione tecnica del canale WhatsApp è affidata a {processor.name}, {processor.address}, P.IVA {processor.vat}, che tratta i dati per conto del titolare in qualità di responsabile del trattamento ai sensi dell'art. 28 GDPR. Usiamo fornitori che trattano i dati per nostro conto: Meta Platforms (WhatsApp Business), Supabase (database), OpenAI (generazione delle risposte), ElevenLabs (messaggi vocali, se attivi), Upstash (code di messaggi) e il provider di hosting. Alcuni hanno sede fuori dallo Spazio Economico Europeo (es. USA): i trasferimenti avvengono con garanzie adeguate, come le Clausole contrattuali standard o decisioni di adeguatezza.</p>
 
       <h2>Conservazione</h2>
       <p>Conserviamo i dati finché il servizio è attivo e, dopo la cancellazione dell&apos;account o la revoca del consenso, li eliminiamo entro 30 giorni, salvo obblighi di legge.</p>

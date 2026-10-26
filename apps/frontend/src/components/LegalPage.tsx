@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { site } from '@/lib/site';
+import Footer from './Footer';
 
 export default function LegalPage({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -20,6 +21,7 @@ export default function LegalPage({ title, children }: { title: string; children
         <p className="text-sm text-stone-500">Ultimo aggiornamento: {site.updated}</p>
         {children}
       </article>
+      <Footer />
     </main>
   );
 }

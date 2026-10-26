@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { site, waLink } from '@/lib/site';
+import Footer from '@/components/Footer';
 
 export const metadata = {
   title: `${site.name} – La forza della preghiera, insieme`,
@@ -136,10 +137,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="py-8 text-center text-sm text-stone-500">
-        <p>{site.name} · un servizio di {site.owner} · {site.address} · P.IVA {site.vat}</p>
-        <p className="mt-2"><Link href="/admin/login">Area riservata</Link></p>
-      </footer>
+      <Footer />
     </main>
   );
 }
