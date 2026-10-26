@@ -38,7 +38,7 @@ export class OnboardingService {
       case 2:
         if (t.length > 60) { await send('Puoi scrivere solo il cognome?'); return; }
         await userService.updateUserProfile(user.id, { cognome: t, onboarding_step: 3 } as any);
-        await send('Grazie.\nPer accompagnarti ho bisogno del tuo consenso al trattamento dei dati personali (GDPR). Li uso solo per il servizio e puoi chiederne la cancellazione in ogni momento.\n\nRispondi *SÌ* per accettare.');
+        await send('Grazie.\nPer accompagnarti ho bisogno del tuo consenso al trattamento dei dati personali (GDPR). Li uso solo per il servizio. Le conversazioni sono salvate e possono essere lette dal nostro team per assisterti e per la tua sicurezza. Puoi chiederne la cancellazione in ogni momento.\n\nRispondi *SÌ* per accettare.');
         return;
 
       case 3:

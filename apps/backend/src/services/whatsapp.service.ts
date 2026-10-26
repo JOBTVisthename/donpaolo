@@ -1,3 +1,4 @@
+import { processIncoming } from './incoming.service';
 import axios from 'axios';
 import { onboardingService } from './onboarding.service';
 import pino from 'pino';
@@ -18,71 +19,12 @@ interface WhatsAppIncomingMessage {
 }
 
 export class WhatsAppService {
-  private apiUrl = 'https://graph.facebook.com/v18.0';
+  private apiUrl = `https://graph.facebook.com/${process.env.WHATSAPP_API_VERSION || 'v21.0'}`;
   private phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   private accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
 
   async handleIncomingMessage(message: WhatsAppIncomingMessage): Promise<void> {
-    try {
-      const phoneNumber = message.from;
-      const messageText = message.text?.body || '';
-
-      logger.info(`📨 Message from ${phoneNumber}: ${messageText}`);
-
-      // Get or create user
-      let user = await userService.getUserByPhoneNumber(phoneNumber);
-
-      if (!user || !(user as any).onboarding_completed) {
-        await onboardingService.handle(
-          phoneNumber,
-          message.type === 'text' ? messageText : '',
-          user,
-          (t) => this.sendMessage(phoneNumber, t)
-        );
-        return;
-      }
-
-      // Process message
-      const emotion = await aiService.detectEmotion(messageText);
-      const hasRisk = await aiService.detectRisk(messageText);
-
-      // Generate response
-      const response = await aiService.generateResponse(messageText, []);
-
-      // Invia la risposta tramite coda per gestire priorità e rate limit
-      await queueService.enqueueMessage({
-        type: 'text',
-        phoneNumber,
-        userId: user.id,
-        messageType: 'chat_response',
-        content: response,
-        logContent: hasRisk ? `[RISK DETECTED] ${response}` : undefined
-      }, hasRisk ? MessagePriority.CRITICAL : MessagePriority.HIGH);
-
-      // Handle risk
-      if (hasRisk) {
-        logger.warn(`🚨 Risk detected for ${phoneNumber}`);
-        
-        // 1. Aggiorna il livello di rischio dell'utente nel DB
-        await userService.updateRiskLevel(user.id, 'high');
-
-        // 2. Crea record nella tabella alerts
-        const supabase = getSupabase();
-        await supabase.from('alerts').insert([{
-          user_id: user.id,
-          alert_type: 'RISK_DETECTION',
-          severity: 'high',
-          description: messageText,
-          handled: false
-        }]);
-
-        // 3. Invia Notifica agli Amministratori
-        const alertContent = `*Utente:* ${user.name || phoneNumber}\n*Tel:* ${phoneNumber}\n*Messaggio:* "${messageText}"\n\n_L'IA ha rilevato una possibile situazione di crisi. Intervenire se necessario._`;
-        await notificationService.sendAdminAlert(alertContent);
-      }
-    } catch (error) {
-      logger.error({ err: error }, 'Error handling incoming message:');
-    }
+    await processIncoming(message, (to, t) => this.sendMessage(to, t));
   }
 
   async sendMessage(phoneNumber: string, message: string): Promise<void> {
@@ -104,7 +46,7 @@ export class WhatsAppService {
 
       logger.info(`✅ Message sent to ${phoneNumber}`);
     } catch (error) {
-      logger.error({ err: error }, `❌ Error sending message to ${phoneNumber}:`);
+      logger.error({ status: (error as any)?.response?.status, meta: (error as any)?.response?.data?.error }, `❌ Error sending message to ${phoneNumber}`);
       throw error;
     }
   }

@@ -45,7 +45,7 @@ export class ConversationService {
 
       if (error) throw error;
 
-      return (data || []).flatMap((conv: any) => [
+      return (data || []).reverse().flatMap((conv: any) => [
         { role: 'user', content: conv.user_message },
         { role: 'assistant', content: conv.ai_response },
       ]);

@@ -29,6 +29,9 @@ export default function Privacy() {
       <h2>Come funziona l&apos;assistente</h2>
       <p>Le risposte sono generate da un sistema di intelligenza artificiale. Non c&apos;è una decisione automatizzata con effetti giuridici su di te. Non è un sacerdote né un professionista sanitario.</p>
 
+      <h2>Conservazione e lettura delle conversazioni</h2>
+      <p>Le conversazioni sono salvate nei nostri sistemi. Il personale autorizzato del titolare può leggerle per fornire assistenza, migliorare il servizio e tutelare la sicurezza delle persone; l'accesso è riservato e protetto da credenziali personali.</p>
+
       <h2>Destinatari e fornitori</h2>
       <p>Usiamo fornitori che trattano i dati per nostro conto: Meta Platforms (WhatsApp Business), Supabase (database), OpenAI (generazione delle risposte), ElevenLabs (messaggi vocali, se attivi), Upstash (code di messaggi) e il provider di hosting. Alcuni hanno sede fuori dallo Spazio Economico Europeo (es. USA): i trasferimenti avvengono con garanzie adeguate, come le Clausole contrattuali standard o decisioni di adeguatezza.</p>
 
