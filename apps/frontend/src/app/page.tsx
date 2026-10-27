@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Fraunces, Figtree } from 'next/font/google';
 import { site, waLink } from '@/lib/site';
 import Footer from '@/components/Footer';
+import BackgroundMusic from '@/components/BackgroundMusic';
 
 const display = Fraunces({ subsets: ['latin'], variable: '--font-display', style: ['normal', 'italic'], display: 'swap' });
 const body = Figtree({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
@@ -211,6 +212,7 @@ export default function Home() {
       </section>
 
       <Footer />
+      <BackgroundMusic />
     </main>
   );
 }
