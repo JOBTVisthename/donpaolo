@@ -13,7 +13,7 @@ export const site = {
   vat: '10226680964',
   email: 'privacy@pregare-insieme.it',
   // Numero WhatsApp in formato internazionale senza + (es. 393331234567). Vuoto = pulsante disattivato.
-  whatsappNumber: '',
+  whatsappNumber: '393331234567',
   updated: 'ottobre 2026',
 };
 
