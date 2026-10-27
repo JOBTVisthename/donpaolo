@@ -52,7 +52,7 @@ function Cta({ big = false }: { big?: boolean }) {
       Inizia gratis su WhatsApp
     </a>
   ) : (
-    <span className={`inline-block rounded-full bg-white/20 font-medium text-white/80 ${size}`}>Presto disponibile</span>
+    <span className={`inline-block rounded-full bg-stone-300 font-medium text-stone-600 ${size}`}>Presto disponibile</span>
   );
 }
 
@@ -72,38 +72,27 @@ export default function Home() {
         }
       `}</style>
 
-      <section className="relative isolate flex min-h-[100svh] items-end overflow-hidden" style={{ backgroundColor: NIGHT }}>
+      <section className="relative" style={{ backgroundColor: CREAM }}>
         <Image
           src={HERO}
           alt="Mani in preghiera al tramonto davanti a una piccola chiesa di campagna"
-          fill
+          width={0}
+          height={0}
           priority
-          quality={80}
+          quality={85}
           sizes="100vw"
-          className="-z-10 object-cover object-[62%_40%] md:object-[50%_45%]"
+          style={{ width: '100%', height: 'auto' }}
         />
-        <div className="absolute inset-0 -z-10" style={{ background: `linear-gradient(to top, ${NIGHT} 0%, ${NIGHT}d9 28%, ${NIGHT}55 62%, ${NIGHT}22 100%)` }} />
-        <div className="absolute inset-0 -z-10 hidden md:block" style={{ background: `linear-gradient(to right, ${NIGHT}aa 0%, transparent 60%)` }} />
+        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-40" style={{ background: 'linear-gradient(to bottom, transparent, ' + CREAM + ')' }} />
+      </section>
 
-        <header className="absolute inset-x-0 top-0 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-          <span className={`${D} text-xl italic text-white`}>{site.name}</span>
-          <a href="#come-funziona" className="rounded-full border border-white/40 px-4 py-1.5 text-sm text-white/90 backdrop-blur-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
-            Come funziona
-          </a>
-        </header>
-
-        <div className="mx-auto w-full max-w-6xl px-6 pb-14 pt-32 md:pb-24">
-          <h1 className={`${D} rise max-w-3xl text-[2.6rem] font-light leading-[1.03] text-white [text-wrap:balance] sm:text-6xl lg:text-7xl`}>
-            La forza della preghiera, insieme
-          </h1>
-          <p className="rise rise-2 mt-6 max-w-xl text-lg leading-relaxed text-white/85 sm:text-xl">
-            Scrivi su WhatsApp, registrati in un minuto e prega con qualcuno che ti ascolta. Come i discepoli di Emmaus, camminiamo insieme a te.
-          </p>
-          <div className="rise rise-3 mt-9 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            <Cta big />
-            <p className="text-sm text-white/75">{site.trialDays} giorni gratis, poi {site.priceMonthly} € al mese. Disdici quando vuoi.</p>
-          </div>
-        </div>
+      <section className="relative z-10 px-6 pb-4 pt-2 text-center">
+        <h1 className="sr-only">La forza della preghiera, insieme</h1>
+        <p className="rise mx-auto max-w-xl text-xl leading-relaxed text-stone-700">
+          Scrivi su WhatsApp, registrati in un minuto e prega con qualcuno che ti ascolta. Come i discepoli di Emmaus, camminiamo insieme a te.
+        </p>
+        <div className="rise rise-2 mt-8"><Cta big /></div>
+        <p className="rise rise-3 mt-4 text-sm text-stone-600">{site.trialDays} giorni gratis, poi {site.priceMonthly} € al mese. Disdici quando vuoi.</p>
       </section>
 
       <section className="mx-auto max-w-3xl px-6 py-20 md:py-28">
