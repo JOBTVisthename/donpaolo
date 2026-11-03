@@ -12,7 +12,7 @@ export class OnboardingService {
     if (!user) {
       const created = await userService.createUser(phoneNumber, '', '');
       await userService.updateUserProfile(created.id, { onboarding_step: 1, onboarding_completed: false } as any);
-      await send('Benvenuto 🙏\nMi piacerebbe conoscerti meglio.\n\nCome preferisci essere chiamato?');
+      await send('Benvenuto 🙏\nSono l\'assistente virtuale di Pregare Insieme: un\'intelligenza artificiale, non una persona e non un sacerdote.\n\nMi piacerebbe conoscerti meglio. Come preferisci essere chiamato?');
       return;
     }
 
@@ -26,7 +26,7 @@ export class OnboardingService {
     switch (step) {
       case 0:
         await userService.updateUserProfile(user.id, { onboarding_step: 1 } as any);
-        await send('Benvenuto 🙏\nMi piacerebbe conoscerti meglio.\n\nCome preferisci essere chiamato?');
+        await send('Benvenuto 🙏\nSono l\'assistente virtuale di Pregare Insieme: un\'intelligenza artificiale, non una persona e non un sacerdote.\n\nMi piacerebbe conoscerti meglio. Come preferisci essere chiamato?');
         return;
 
       case 1:
