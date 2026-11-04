@@ -12,6 +12,7 @@ import webhookRoutes from './api/webhooks';
 import userRoutes from './api/users';
 import prayerRoutes from './api/prayers';
 import adminRoutes from './api/admin';
+import socialRoutes from './api/social';
 import { errorHandler } from './middleware/error-handler';
 
 dotenv.config({ path: '.env' });
@@ -32,7 +33,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(helmet());
 app.use(cors());
-app.use(express.json({ verify: (req: any, _res: any, buf: Buffer) => { req.rawBody = buf; } }));
+app.use(express.json({ limit: '4mb', verify: (req: any, _res: any, buf: Buffer) => { req.rawBody = buf; } }));
 app.use(express.urlencoded({ extended: true }));
 
 // Initialize database
@@ -49,6 +50,7 @@ app.use('/api/v1/webhooks', webhookRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/prayers', prayerRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/social', socialRoutes);
 
 // Error handling
 app.use(errorHandler);

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { FiMenu, FiX, FiLogOut, FiHome, FiUsers, FiAlertTriangle } from 'react-icons/fi'
+import { FiMenu, FiX, FiLogOut, FiHome, FiUsers, FiAlertTriangle, FiImage } from 'react-icons/fi'
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -55,6 +55,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           >
             <FiAlertTriangle size={20} />
             {sidebarOpen && <span>Alert</span>}
+          </Link>
+          <Link href="/admin/social" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-spiritual-800 transition">
+            <FiImage size={20} />
+            {sidebarOpen && <span>Social</span>}
           </Link>
         </nav>
 
